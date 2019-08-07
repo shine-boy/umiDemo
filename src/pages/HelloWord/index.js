@@ -1,6 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Card, Input, Button, Table, Modal, Form, Icon, Divider } from 'antd'
+import { Card, Input, Button, Table, Modal, Form, Icon, Divider, Pagination } from 'antd'
 import ReactDOM from 'react-dom';
+import { connect } from 'dva';
 const style = {
     width: '400px',
     margin: '30px',
@@ -8,19 +9,53 @@ const style = {
     border: '1px solid #e8e8e8',
 
 };
+
 const { Meta } = Card;
 const namespace = 'table';
+
+const mapStateToProps = (state) => {
+    
+    const cardList = state[namespace].data;
+    
+   
+    return {
+        cardList,
+    };
+};
 const mapDispatchToProps = (dispatch) => {
     return {
-        onDidMount: () => {
-            dispatch({
+        getList: () => {
+            const action = {
                 type: `${namespace}/queryInitCards`,
-            });
+                
+            };
+            dispatch(action);
         },
+        addList:(value)=>{
+            const action = {
+                type: `${namespace}/addInitCards`,
+                payload: value,
+            };
+            dispatch(action);
+        },
+        updateList:(value)=>{
+            const action = {
+                type: `${namespace}/updateInitCards`,
+                payload: value,
+            };
+            dispatch(action);
+        },
+        deleteList:(value)=>{
+            const action = {
+                type: `${namespace}/deleteInitCards`,
+                payload: value,
+            };
+            dispatch(action);
+        }
     };
 };
 
-@connect( mapDispatchToProps)
+@connect(mapStateToProps, mapDispatchToProps)
 class helloWord extends React.Component {
 
     state = {
@@ -53,21 +88,26 @@ class helloWord extends React.Component {
                 dataIndex: 'action',
                 key: 'action',
                 render: (text, record, index) => (
-                    this.state.index = index,
+                    
                     <span>
-                        <a href="javascript:;" onClick={() => this.edit(text)}>编辑 </a>
+                        <a href="javascript:;" onClick={() => this.edit(record)}>编辑 </a>
                         <Divider type="vertical" />
-                        <a href="javascript:;" onClick={() => this.delete()}>删除</a>
+                        <a href="javascript:;" onClick={() => this.delete(record)}>删除</a>
                     </span>
                 ),
             },
         ],
     };
-    edit = () => {
+    componentDidMount() {
+        this.props.getList();
+    }
 
+    edit = (record) => {
+        
         this.setState({
             visible: true,
-            editFlag: 'edit'
+            editFlag: 'edit',
+            index: record.ID,
         })
     }
     add = () => {
@@ -76,33 +116,35 @@ class helloWord extends React.Component {
             editFlag: 'add'
         })
 
-    };
-    delete = () => {
-        let data = this.state.data;
-        data.splice(this.state.index, 1);
-       
-        this.setState({
 
-            data: data,
+    };
+    delete = (record) => {
+        
+        this.props.deleteList(record.ID);
+
+        this.setState({
+            ID: this.state.ID - 1,
+            index:record.ID,
         });
     }
-    handleOk = e => {
+    handleOk = e=> {
 
         const { editFlag, index } = this.state;
         let data = this.state.data;
         let form = this.props.form;
+        let id = this.state.ID;
+        if (form.getFieldValue('title') === "" || form.getFieldValue('content') === "")
+            return;
         if (editFlag === 'add') {
-
-            let state = this.state;
-            data = state.data.concat({ ID: state.ID, title: form.getFieldValue('title'), content: form.getFieldValue('content') });
+            this.props.addList({ ID: id, title: form.getFieldValue('title'), content: form.getFieldValue('content') });
+            
         } else {
-            let form = this.props.form;
-            data[index].title = form.getFieldValue('title');
-            data[index].content = form.getFieldValue('content');
-
+            this.props.updateList({ ID: index, title: form.getFieldValue('title'), content: form.getFieldValue('content') });
 
         }
-
+        id += 1;
+        
+        //this.props.onClickAdd(...data);
         //let sourse={ID:state.ID+1,}
 
 
@@ -110,6 +152,7 @@ class helloWord extends React.Component {
         this.setState({
             visible: false,
             data: data,
+            ID: id,
         });
 
 
@@ -145,7 +188,7 @@ class helloWord extends React.Component {
                     onCancel={this.handleCancel}
                     okText="确定"
                     cancelText="取消"
-                    destroyOnClose={true}
+
                     id="modal"
                 >
                     <Form {...formItemLayout}>
@@ -178,17 +221,14 @@ class helloWord extends React.Component {
                                 ],
                             })(<Input placeholder="内容" />)}
                         </Form.Item>
-
-
-
                     </Form>
-
                 </Modal>
                 <Button type="primary" icon="plus" onClick={this.add}>新建</Button>
-                <Table columns={this.state.columns} dataSource={this.state.data}>
-
+                <Table columns={this.state.columns} dataSource={this.props.cardList}>
+                    <Pagination defaultCurrent={1} total={50} />
                 </Table>
 
+                
 
             </Card>
 
