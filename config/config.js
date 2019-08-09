@@ -112,6 +112,12 @@ export default {
           component: './HelloWord/effectGo',
         },
         {
+          path: '/test',
+          name: 'test',
+          icon: 'smile',
+          component: './HelloWord/test',
+        },
+        {
           component: './404',
         },
       ],
@@ -164,13 +170,13 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  /*
+  
   proxy: {
-    '/server/api/': {
-      target: 'https://preview.pro.ant.design/',
+    '/api': {
+      target: 'http://192.168.22.42:8080/',
       changeOrigin: true,
-      pathRewrite: { '^/server': '' },
+      //pathRewrite: { '^/server': '' },
     },
   },
-  */
+  
 };

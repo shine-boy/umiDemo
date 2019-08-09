@@ -106,4 +106,5 @@
     "config/**/*.js*",
     "scripts/**/*.js"
   ]
+  
 }

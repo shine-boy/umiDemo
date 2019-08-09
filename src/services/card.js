@@ -3,28 +3,27 @@ import request from '@/utils/request';
 
 export async function getList() {
 
-    return request('/dev/random_joke', {
+    return request('/api/unity', {
         method: 'GET',
+        headers: {
+            'Content-Type': "application/json;charset=UTF-8",
+            "Transfer-Encoding":"chunked"
+        },
+        
     });
 }
 
-export async function getListById(id) {
-
-    return request(`/dev/random_joke?ID=${id}`, {
-        method: 'GET',
-    });
-}
 
 export async function deleteListById(id) {
     
-    return request(`/dev/random_joke?ID=${id}`, {
+    return request(`/api/unity/${id}`, {
         method: 'DELETE',
     });
 }
 
 export async function addList(payload) {
-    
-    return request(`/dev/random_joke`, {
+   
+    return request(`/api/unity`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -35,7 +34,7 @@ export async function addList(payload) {
 
 export async function updateList(payload) {
 
-    return request(`/dev/random_joke`, {
+    return request(`/api/unity`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'

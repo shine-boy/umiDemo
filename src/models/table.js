@@ -20,10 +20,40 @@ export default {
     reducers: {
         getList(state, { payload: d }) {
             return {
-                data: d,
+                data : d,
 
             };
-        }
+        },
+        addList(state, { payload: d }) {
+            state.data.push({ ...d });
+            
+            return {
+                data : state.data,
+
+            };
+        },
+        updateList(state, { payload: d }) {
+            state.data.map((item) => {
+                if (item.id === d.id) {
+                  item.title = d.title;
+                  item.content = d.content;
+                }
+              });
+              return {
+                data: state.data,
+
+            };
+        },
+        deleteList(state, { payload: d }) {
+
+            const ra=state.data.filter(joke => joke.id !== d);
+            
+            return {
+                data: ra,
+
+            };
+        },
+
     },
     effects: {
         //获得数据
@@ -32,28 +62,30 @@ export default {
 
 
             const puzzle = yield call(getList);
-
+            ;
+            
+            
             yield put({ type: 'getList', payload: puzzle });
         },
         *addInitCards({ payload }, sagaEffects) {
             const { call, put } = sagaEffects;
             const puzzle = yield call(addList, payload);
-
-            yield put({ type: 'getList', payload: puzzle });
+            
+            yield put({ type: 'addList', payload: puzzle });
         },
         *updateInitCards({ payload }, sagaEffects) {
             
             const { call, put } = sagaEffects;
             const puzzle = yield call(updateList, payload);
-
-            yield put({ type: 'getList', payload: puzzle });
+            
+            yield put({ type: 'updateList', payload: puzzle });
         },
         *deleteInitCards( {payload} , sagaEffects) {
             
             const { call, put } = sagaEffects;
             const puzzle = yield call(deleteListById, payload);
-
-            yield put({ type: 'getList', payload: puzzle });
+            
+            yield put({ type: 'deleteList', payload: payload });
         },
     },
 };

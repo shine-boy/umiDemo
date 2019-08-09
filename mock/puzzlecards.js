@@ -1,4 +1,4 @@
-const random_jokes = [
+var random_jokes = [
   {
     ID: 1,
     title: 'What is the object oriented way to get wealthy ?',
@@ -21,10 +21,10 @@ let random_joke_call_count = 0;
 export default {
   'get /dev/random_joke': function (req, res) {
     const responseObj = random_jokes;
-
-    setTimeout(() => {
       res.json(responseObj);
-    }, 3000);
+      
+      
+    
   },
   'post /dev/random_joke': function (req, res) {
 
@@ -46,12 +46,9 @@ export default {
   'delete /dev/random_joke': function (req, res) {
     
     const id=parseInt(req.query.ID);
+    random_jokes=random_jokes.filter(joke => joke.ID !== id);
     
-    
-    
-    const date=random_jokes.filter(joke => joke.ID !== id);
-    
-    res.send(date);
+    res.send(random_jokes);
     
   },
 };
